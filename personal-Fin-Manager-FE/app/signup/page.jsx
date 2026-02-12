@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -8,13 +8,38 @@ import React from "react";
 
 
 export default function SignUpPage() {
+    const router = useRouter();
     
-    const [user, setUser] = useState({email: "", password: "",username: ""});
+    const [user, setUser] = useState({email: "", password: "", username: "", fullName: ""});
     const [loading, setLoading] = useState(false);
-    
+    const [buttonDisabled, setButtonDisabled] = useState(false);
     const onSignUp = async () => {
-    
+       try {
+        setLoading(true);
+        const response = await axios.post("/api/users/signup", {
+            username: user.username,
+            email: user.email,
+            password: user.password,
+            fullNmae: user.fullName,
+        });
+        console.log("Signup success", response.data);
+        toast.success("Signup successful!");
+        router.push("/login");
+    } catch (error) {
+        console.log("Signup failed", error.message);
+        toast.error(error.response?.data?.message || "Signup failed");
+    } finally {
+        setLoading(false);
     }
+    }
+
+    useEffect(() => {
+        if(user.email.length > 0 && user.password.length > 0 && user.username.length > 0 && user.fullName.length > 0){
+            setButtonDisabled(false);
+        } else {
+            setButtonDisabled(true);
+        }
+    }, [user])
     return (
         <>
         <div>
@@ -28,8 +53,15 @@ export default function SignUpPage() {
         onChange={(e) => setUser({...user, username: e.target.value})} 
         />
         </div>
-
-        
+        <div>
+        <label htmlFor="fullName">Full Name</label>
+        <input 
+        type="text" 
+        id="fullName" 
+        value={user.fullName} 
+        onChange={(e) => setUser({...user, fullName: e.target.value})} 
+        />
+        </div>
         <div>
         <label htmlFor="email">Email</label>
         <input 
@@ -49,7 +81,7 @@ export default function SignUpPage() {
         />
         </div>
         <div>
-        <button onClick={onSignUp} disabled={loading}>
+        <button onClick={onSignUp} disabled={loading || buttonDisabled}>
             {loading ? "Signing up..." : "Sign Up"}
         </button>
         </div>
