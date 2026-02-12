@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
+import connectDB from "./config/database.js";
 
 
 
@@ -27,15 +27,18 @@ app.get('/api/health', (req, res) =>{
     });
 });
 
-app.listen(PORT, async() => {
-    console.log(`Server is running on port ${PORT}`);
+async function startServer() {
     try {
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log("Connected to MongoDB");
-    } catch (err) {
-        console.log(err);
+        //database connection
+        await connectDB();
+        //start server
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
+        });
+    } catch (error) {
+        console.error("Error starting server:", error);
+        process.exit(1);
     }
-    finally {
-        console.log(`Server is running on port ${PORT} along with MongoDB`);
-    }
-});
+}
+
+startServer();
