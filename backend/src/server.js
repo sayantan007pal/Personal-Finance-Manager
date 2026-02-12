@@ -2,11 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+
 
 
 dotenv.config();
@@ -20,6 +16,16 @@ app.use(cors({
     optionsSuccessStatus: 200
 }))
 
+app.get('/api/health', (req, res) =>{
+    res.status(200).json({
+        status: 'ok',
+        message: 'Server is running',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV
+
+    });
+});
 
 app.listen(PORT, async() => {
     console.log(`Server is running on port ${PORT}`);
