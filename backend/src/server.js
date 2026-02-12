@@ -1,14 +1,12 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import connectDB from "./config/database.js";
+import { validateConfig, config } from "./config/environment.js";
 
 
-
-dotenv.config();
 
 const app = express()
-const PORT = process.env.PORT || 3005;
+const PORT = config.port;
 
 app.use(cors({
     origin: '*',
@@ -22,13 +20,15 @@ app.get('/api/health', (req, res) =>{
         message: 'Server is running',
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
-        environment: process.env.NODE_ENV
+        environment: config.nodeEnv
 
     });
 });
 
 async function startServer() {
     try {
+        //validate environment variables
+        validateConfig();
         //database connection
         await connectDB();
         //start server
