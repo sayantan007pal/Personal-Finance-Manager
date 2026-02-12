@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import connectDB from "./config/database.js";
 import { validateConfig, config } from "./config/environment.js";
-import errorHandler from "./middleware/errorHandler.js";
+import { errorHandler } from "./middleware/index.js";
 
 
 const app = express()

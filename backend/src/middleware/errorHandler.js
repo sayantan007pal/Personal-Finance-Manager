@@ -1,8 +1,9 @@
 import { config } from "../config/environment.js";
 
 
-export default function errorHandler(err, req, res, next) {
+export default function errorHandler(err, req, res) {
     console.error('=>', req.originalUrl, 'Error:', err.message);
+
     if (err.name === 'ValidationError') {
         return res.status(400).json({
             status: 'error',
