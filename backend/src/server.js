@@ -2,18 +2,24 @@ import express from "express";
 import cors from "cors";
 import connectDB from "./config/database.js";
 import { validateConfig, config } from "./config/environment.js";
-
+import errorHandler from "./middleware/errorHandler.js";
 
 
 const app = express()
 const PORT = config.port;
 
+// parse request body
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// cors
 app.use(cors({
     origin: '*',
     credentials: true,
     optionsSuccessStatus: 200
 }))
 
+// health check endpoint
 app.get('/api/health', (req, res) =>{
     res.status(200).json({
         status: 'ok',
@@ -24,7 +30,26 @@ app.get('/api/health', (req, res) =>{
 
     });
 });
+//API routes
+// app.use('/api/auth', authRoutes);
+// app.use('/api/expenses', expenseRoutes);
+// app.use('/api/budgets', budgetRoutes);
+// app.use('/api/reports', reportRoutes);
 
+app.use((req, res, next) => {
+    console.log('=>', req.originalUrl, 'Route not found');
+    res.status(404).json({
+        status: 'error',
+        message: 'Route not found',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: config.nodeEnv
+    });
+});
+// error handler
+app.use(errorHandler);
+
+// start server function
 async function startServer() {
     try {
         //validate environment variables
