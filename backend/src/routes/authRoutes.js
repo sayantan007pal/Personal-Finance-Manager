@@ -29,6 +29,15 @@ const userSignUp = async (req, res) => {
             data: savedUser
         });
     } catch (err) {
+        console.error("Error in signup route:", err);
+        // Handle MongoDB duplicate key error (code 11000)
+        if (err.code === 11000) {
+            const field = Object.keys(err.keyPattern)[0];
+            return NextResponse.json(
+                { message: `${field} already exists` },
+                { status: 400 }
+            );
+        };
         return res.status(500).json({
             success: false,
             message: err.message
