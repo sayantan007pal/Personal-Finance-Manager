@@ -14,71 +14,66 @@ export default function SignUpPage() {
     const [loading, setLoading] = useState(false);
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const onSignUp = async () => {
-       try {
-        setLoading(true);
-        const response = await axios.post("/api/users/signup", {
-            username: user.username,
-            email: user.email,
-            password: user.password,
-            fullName: user.fullName,
-        });
-        console.log("Signup success", response.data);
-        toast.success("Signup successful!");
-        router.push("/login");
-        return;
-    } catch (error) {
-        console.log("Signup failed", error.message);
-        toast.error(error.response?.data?.message || "Signup failed");
-    } finally {
-        setLoading(false);
-    }
-    }
+        try {
+         setLoading(true);
+         const response = await axios.post("/api/users/signup", user);
+         console.log("Signup success", response.data);
+         toast.success("Signup successful!");
+         router.push("/login");
+     } catch (err) {
+         console.log("Signup failed", err.message);
+         toast.error(err.response?.data?.message || "Signup failed");
+     } finally {
+         setLoading(false);
+     }
+     }
+ 
+     useEffect(() => {
+         if(user.email.length > 0 && user.password.length > 0 && user.username.length > 0){
+             setButtonDisabled(false);
+         } else {
+             setButtonDisabled(true);
+         }
+     }, [user])
 
-    useEffect(() => {
-        if(user.email.length > 0 && user.password.length > 0 && user.username.length > 0 && user.fullName.length > 0){
-            setButtonDisabled(false);
-        } else {
-            setButtonDisabled(true);
-        }
-    }, [user])
     return (
         <div>
         <div>
         <h1>Sign Up</h1>
         <hr />
         <label htmlFor="username">Username</label>
-        <input 
-        type="text" 
-        id="username" 
-        value={user.username} 
-        onChange={(e) => setUser({...user, username: e.target.value})} 
+        <input
+          type="text"
+          id="username"
+          value={user.username}
+          onChange={(e) => setUser({...user, username: e.target.value})}
         />
         </div>
         <div>
         <label htmlFor="fullName">Full Name</label>
-        <input 
-        type="text" 
-        id="fullName" 
-        value={user.fullName} 
-        onChange={(e) => setUser({...user, fullName: e.target.value})} 
+        <input
+          type="text"
+          id="fullName"
+          value={user.fullName}
+          onChange={(e) => setUser({...user, fullName: e.target.value})}
         />
         </div>
         <div>
         <label htmlFor="email">Email</label>
-        <input 
-        type="email" 
-        id="email" 
-        value={user.email} 
-        onChange={(e) => setUser({...user, email: e.target.value})} 
+        <input
+          type="email"
+          id="email"
+          value={user.email}
+          onChange={(e) => setUser({...user, email: e.target.value})}
         />
         </div>
         <div>
         <label htmlFor="password">Password</label>
-        <input 
-        type="password" 
-        id="password" 
-        value={user.password} 
-        onChange={(e) => setUser({...user, password: e.target.value})} 
+        <input
+          type="password"
+          id="password"
+          value={user.password}
+          onChange={(e) => setUser({...user, password: e.target.value})}
         />
         </div>
         <div>
