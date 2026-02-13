@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -25,7 +25,6 @@ export default function ProfilePage(){
             toast.error("Logout failed");
         }
     }
-    useEffect
 
     return (
         <div>
