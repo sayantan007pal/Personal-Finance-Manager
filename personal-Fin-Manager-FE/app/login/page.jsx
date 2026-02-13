@@ -23,7 +23,7 @@ export default function LoginPage() {
         </div>  
         <div>
         <label htmlFor="email">Email</label>
-        <input 
+        <input className = "p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600"
         type="email" 
         id="email" 
         value={user.email} 
@@ -32,7 +32,7 @@ export default function LoginPage() {
         </div>
         <div>
         <label htmlFor="password">Password</label>
-        <input 
+        <input className = "p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600"
         type="password" 
         id="password" 
         value={user.password} 
@@ -44,7 +44,7 @@ export default function LoginPage() {
             {loading ? "Logging in..." : "Login"}
         </button>
         </div>
-        <Link href="/signup"> Visit Sign Up page</Link> 
+        <Link className="text-blue-600 hover:text-blue-800 underline mt-4 inline-block" href="/signup"> Visit Sign Up page</Link> 
         </>
     )
 }

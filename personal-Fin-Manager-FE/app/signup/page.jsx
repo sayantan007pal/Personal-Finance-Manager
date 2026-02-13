@@ -49,6 +49,7 @@ export default function SignUpPage() {
         <hr />
         <label htmlFor="username">Username</label>
         <input
+        className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600"
           type="text"
           id="username"
           value={user.username}
@@ -58,6 +59,7 @@ export default function SignUpPage() {
         <div>
         <label htmlFor="fullName">Full Name</label>
         <input
+        className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600"
           type="text"
           id="fullName"
           value={user.fullName}
@@ -66,7 +68,8 @@ export default function SignUpPage() {
         </div>
         <div>
         <label htmlFor="email">Email</label>
-        <input
+        <input 
+          className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600"
           type="email"
           id="email"
           value={user.email}
@@ -75,7 +78,7 @@ export default function SignUpPage() {
         </div>
         <div>
         <label htmlFor="password">Password</label>
-        <input
+        <input className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600"
           type="password"
           id="password"
           value={user.password}
@@ -83,11 +86,11 @@ export default function SignUpPage() {
         />
         </div>
         <div>
-        <button onClick={onSignUp} disabled={loading || buttonDisabled}>
+        <button className = "p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600" onClick={onSignUp} disabled={loading || buttonDisabled}>
             {loading ? "Signing up..." : "Sign Up"}
         </button>
         </div>
-        <Link href="/login">Visit Login page</Link>
+        <Link className="text-blue-600 hover:text-blue-800 underline mt-4 inline-block" href="/login">Visit Login page</Link>
         </div>
     )
 }
