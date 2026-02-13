@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const userSchema = new mongoose.schema({
+const userSchema = new mongoose.Schema({
     username:{
         type:String,
         required:[true, "Username is Required"],
@@ -14,7 +14,7 @@ const userSchema = new mongoose.schema({
         unique:true,
         trim:true
     },
-    fullNmae:{
+    fullName:{
         type:String,
         required:[true, "Full Name is Required" ],
         trim:true

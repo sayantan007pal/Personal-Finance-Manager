@@ -20,11 +20,12 @@ export default function SignUpPage() {
             username: user.username,
             email: user.email,
             password: user.password,
-            fullNmae: user.fullName,
+            fullName: user.fullName,
         });
         console.log("Signup success", response.data);
         toast.success("Signup successful!");
         router.push("/login");
+        return;
     } catch (error) {
         console.log("Signup failed", error.message);
         toast.error(error.response?.data?.message || "Signup failed");
@@ -41,7 +42,7 @@ export default function SignUpPage() {
         }
     }, [user])
     return (
-        <>
+        <div>
         <div>
         <h1>Sign Up</h1>
         <hr />
@@ -85,8 +86,8 @@ export default function SignUpPage() {
             {loading ? "Signing up..." : "Sign Up"}
         </button>
         </div>
-        <Link href="/login"> Visit Login page</Link> 
-        </>
+        <Link href="/login">Visit Login page</Link>
+        </div>
     )
 }
 
