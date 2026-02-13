@@ -16,7 +16,7 @@ export default function SignUpPage() {
     const onSignUp = async () => {
         try {
             setLoading(true);
-            const response = await axios.post("/api/users/signup", {
+            const response = await axios.post( `${process.env.NEXT_PUBLIC_API_URL}/api/users/signup`, {
                 username: user.username,
                 email: user.email,
                 password: user.password,

@@ -13,6 +13,22 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     
     const onLogin = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.post( `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`, {
+                email: user.email,
+                password: user.password,
+            });
+            console.log("login success", response.data);
+            toast.success("Login successful!");
+            // router.push("/");
+            return;
+        } catch (err) {
+            console.log("login failed", err.message);
+            toast.error(err.response?.data?.message || "Login failed");
+        } finally {
+            setLoading(false);
+        }
     
     }
     return (
@@ -40,7 +56,7 @@ export default function LoginPage() {
         />
         </div>
         <div>
-        <button onClick={onLogin} disabled={loading}>
+        <button className = "p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600" onClick={onLogin} disabled={loading}>
             {loading ? "Logging in..." : "Login"}
         </button>
         </div>
