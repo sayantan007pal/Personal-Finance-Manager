@@ -1,11 +1,11 @@
-import {User} from "../models/index.js";
+import { User } from "../models/index.js";
 import bcrypt from "bcryptjs";
-import {Router} from "express";
+import jwt from "jsonwebtoken";
+import { Router } from "express";
 
+const router = Router();
 
-const router = Router()
-
-
+const JWT_EXPIRATION_SECONDS = 24 * 60 * 60; // 1 day
 
 const userSignUp = async (req, res) => {
     try {
@@ -34,32 +34,52 @@ const userSignUp = async (req, res) => {
             message: error.message
         });
     }
-}
+};
 
 const userLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        //find user
+
+        // find user
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: "User not found"
+                message: "User not found",
             });
         }
-        //compare password
+
+        // compare password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid credentials"
+                message: "Invalid credentials",
             });
         }
-        //send response
+
+        // create JWT payload
+        const payload = {
+            id: user._id,
+            email: user.email,
+            username: user.username,
+        };
+
+        // sign JWT
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+            expiresIn: JWT_EXPIRATION_SECONDS,
+        });
+
+        // optionally set cookie (Express-style)
+        res.cookie("token", token, {
+            httpOnly: true,
+            maxAge: JWT_EXPIRATION_SECONDS * 1000,
+        });
+
         return res.status(200).json({
             success: true,
-            message: "User logged in successfully",
-            data: user
+            message: "Login successful",
+            token,
         });
     } catch (error) {
         return res.status(500).json({
@@ -67,9 +87,9 @@ const userLogin = async (req, res) => {
             message: error.message
         });
     }
-}
+};
 
-router.post('/signup', userSignUp);
-router.post('/login', userLogin);
+router.post("/signup", userSignUp);
+router.post("/login", userLogin);
 
 export default router;
