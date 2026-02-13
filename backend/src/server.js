@@ -3,6 +3,7 @@ import cors from "cors";
 import connectDB from "./config/database.js";
 import { validateConfig, config } from "./config/environment.js";
 import { errorHandler } from "./middleware/index.js";
+import { authRoutes } from "./routes/index.js";
 
 
 const app = express()
@@ -31,7 +32,7 @@ app.get('/api/health', (req, res) =>{
     });
 });
 //API routes
-// app.use('/api/auth', authRoutes);
+app.use('/api/users',authRoutes);
 // app.use('/api/expenses', expenseRoutes);
 // app.use('/api/budgets', budgetRoutes);
 // app.use('/api/reports', reportRoutes);
