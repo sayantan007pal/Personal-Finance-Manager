@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
 
- 
 // This function can be marked `async` if using `await` inside
 export function middleware(request) {
-    const isPublicPath = request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/signup";
+    const pathname = request.nextUrl.pathname;
+    const isPublicPath = pathname === "/login" || pathname === "/signup";
     const token = request.cookies.get("token")?.value;
 
     if (token && isPublicPath) {
@@ -12,6 +12,9 @@ export function middleware(request) {
     if (!token && !isPublicPath) {
         return NextResponse.redirect(new URL('/login', request.nextUrl)) // Redirect to login if not logged in and trying to access protected routes;
     }
+    
+    // Allow the request to proceed if no redirect is needed
+    return NextResponse.next();
 }
  
 export const config = {
