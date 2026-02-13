@@ -15,26 +15,32 @@ export default function SignUpPage() {
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const onSignUp = async () => {
         try {
-         setLoading(true);
-         const response = await axios.post("/api/users/signup", user);
-         console.log("Signup success", response.data);
-         toast.success("Signup successful!");
-         router.push("/login");
-     } catch (err) {
-         console.log("Signup failed", err.message);
-         toast.error(err.response?.data?.message || "Signup failed");
-     } finally {
-         setLoading(false);
-     }
-     }
- 
-     useEffect(() => {
-         if(user.email.length > 0 && user.password.length > 0 && user.username.length > 0){
-             setButtonDisabled(false);
-         } else {
-             setButtonDisabled(true);
-         }
-     }, [user])
+            setLoading(true);
+            const response = await axios.post("/api/users/signup", {
+                username: user.username,
+                email: user.email,
+                password: user.password,
+                fullName: user.fullName,
+            });
+            console.log("Signup success", response.data);
+            toast.success("Signup successful!");
+            router.push("/login");
+            return;
+        } catch (err) {
+            console.log("Signup failed", err.message);
+            toast.error(err.response?.data?.message || "Signup failed");
+        } finally {
+            setLoading(false);
+        }
+        }
+    
+        useEffect(() => {
+            if(user.email.length > 0 && user.password.length > 0 && user.username.length > 0 && user.fullName.length > 0){
+                setButtonDisabled(false);
+            } else {
+                setButtonDisabled(true);
+            }
+        }, [user])
 
     return (
         <div>
