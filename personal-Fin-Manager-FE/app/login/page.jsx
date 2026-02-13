@@ -8,7 +8,7 @@ import React from "react";
 
 
 export default function LoginPage() {
-    
+    const router = useRouter();
     const [user, setUser] = useState({email: "", password: ""});
     const [loading, setLoading] = useState(false);
     
@@ -21,7 +21,7 @@ export default function LoginPage() {
             });
             console.log("login success", response.data);
             toast.success("Login successful!");
-            // router.push("/");
+            router.push("/profile");
             return;
         } catch (err) {
             console.log("login failed", err.message);

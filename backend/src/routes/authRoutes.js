@@ -28,10 +28,10 @@ const userSignUp = async (req, res) => {
             message: "User created successfully",
             data: savedUser
         });
-    } catch (error) {
+    } catch (err) {
         return res.status(500).json({
             success: false,
-            message: error.message
+            message: err.message
         });
     }
 };
@@ -81,14 +81,32 @@ const userLogin = async (req, res) => {
             message: "Login successful",
             token,
         });
-    } catch (error) {
+    } catch (err) {
         return res.status(500).json({
             success: false,
-            message: error.message
+            message: err.message
         });
     }
 };
 
+const userLogOut = async(req, res)=>{
+    try {
+        res.clearCookie("token");
+        return res.status(200).json({
+            success: true,
+            message: "Logged out successfully"
+        })
+        
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+
+}
+
+router.get("/logout", userLogOut);
 router.post("/signup", userSignUp);
 router.post("/login", userLogin);
 
