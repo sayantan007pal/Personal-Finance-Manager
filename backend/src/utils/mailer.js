@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import User from '@/models/userModel';
+import User from '../models/userModel.js';
 import bcrypt from 'bcryptjs';
 
 export async function sendMail({ email, emailType, userId }) {
@@ -23,20 +23,20 @@ export async function sendMail({ email, emailType, userId }) {
         }
 
         const transport = nodemailer.createTransport({
-            host: EMAIL_HOST,
-            port: EMAIL_PORT,
+            host: process.env.EMAIL_HOST,
+            port: process.env.EMAIL_PORT,
             auth: {
-                user: EMAIL_USER,
-                pass: EMAIL_PASS
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
             }
         });
 
         const mailOptions = {
-            from: EMAIL_FROM,
+            from: process.env.EMAIL_FROM,
             to: email,
             subject: emailType === "VERIFY_EMAIL" ? "Verify your email" : "Reset your password",
-            html: `<p>Click <a href="${process.env.DOMAIN}/verifyemail?id=${userId}&token=${hashedToken}">here</a> to ${emailType === "VERIFY_EMAIL" ? "verify your email" : "reset your password"}
-            or copy and paste the link in your browser. <br> ${process.env.DOMAIN}/verifyemail?id=${userId}&token=${hashedToken}</p>`
+            html: `<p>Click <a href="${process.env.FRONTEND_URL}/verifyemail?token=${hashedToken}">here</a> to ${emailType === "VERIFY_EMAIL" ? "verify your email" : "reset your password"}
+            or copy and paste the link in your browser. <br> ${process.env.FRONTEND_URL}/verifyemail?token=${hashedToken}</p>`
         }
 
         const mailResponse = await transport.sendMail(mailOptions);
