@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
 import React from "react";
+import TotalBalanceBox from "@/components/totalBalanceBox";
 
 
 export default function ProfilePage(){
@@ -67,6 +68,13 @@ export default function ProfilePage(){
         <div className="container">
             <h1>Profile Page</h1>
             <hr />
+
+            <TotalBalanceBox
+                accounts={[]}
+                totalBanks={3}
+                totalCurrentBalance={12450.75}
+            />
+
             <button
                 onClick={logout}
                 className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
