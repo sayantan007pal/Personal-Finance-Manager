@@ -1,146 +1,127 @@
-"use client";
-import Link from "next/link";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import api from "@/lib/api";
-import toast from "react-hot-toast";
-import React from "react";
-import TotalBalanceBox from "@/components/totalBalanceBox";
+'use client'
+import React, { useState, useEffect } from 'react'
+import api from '@/lib/api'
 
+const Profile = () => {
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [transactions, setTransactions] = useState([])
+  const [budgets, setBudgets] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-export default function ProfilePage(){
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
 
-    const [user, setUser] = useState({
-        email: "",
-        password: ""
-    })
-    const [transactions, setTransactions] = useState([]);
+        const profileRes = await api.get('/api/users/profile')
+        setName(profileRes.data.name)
+        setEmail(profileRes.data.email)
 
-        const totalIncome = transactions
-            .filter(t => t.type === "Income")
-            .reduce((sum, t) => sum + t.amount, 0);
+        const transactionsRes = await api.get('/api/transactions')
+        setTransactions(transactionsRes.data)
 
-        const totalExpenses = transactions
-            .filter(t => t.type === "Expense")
-            .reduce((sum, t) => sum + t.amount, 0);
+        const budgetsRes = await api.get('/api/budgets')
+        setBudgets(budgetsRes.data)
+      } catch (err) {
+        console.log("Failed to fetch data", err.message)
+        setError("Failed to load data")
+      } finally {
+        setLoading(false)
+      }
+    }
 
-        const balance = totalIncome - totalExpenses;
-        const addIncome = () => {
-            const description = document.getElementById("income-description").value;
-            const amount = parseFloat(document.getElementById("income-amount").value);
+    fetchData()
+  }, [])
 
-            if (!description || !amount) return;  // don't add empty entries
+  const totalIncome = transactions
+    .filter(t => t.amount > 0)
+    .reduce((sum, t) => sum + t.amount, 0)
 
-            setTransactions([...transactions, { description, amount, category: "Income", type: "Income" }]);
+  const totalExpenses = transactions
+    .filter(t => t.amount < 0)
+    .reduce((sum, t) => sum + Math.abs(t.amount), 0)
 
-            // Clear the input fields after adding
-            document.getElementById("income-description").value = "";
-            document.getElementById("income-amount").value = "";
-        };
-        const addExpense = () => {
-            const description = document.getElementById("expense-description").value;
-            const amount = parseFloat(document.getElementById("expense-amount").value);
-            const category = document.getElementById("expense-category").value;
+  const balance = totalIncome - totalExpenses
 
-            if (!description || !amount) return;
+  if (loading) return <p>Loading...</p>
+  if (error) return <p>{error}</p>
 
-            setTransactions([...transactions, { description, amount, category, type: "Expense" }]);
+  return (
+    <div>
+      <h1>Finance Dashboard</h1>
+      <p>Welcome back, {name}</p>
+      <p>Email: {email}</p>
 
-            document.getElementById("expense-description").value = "";
-            document.getElementById("expense-amount").value = "";
-        };
-        const clearAll = () => {
-        setTransactions([]);
-    };
-    return (
-        <div className="container">
-            <h1>Profile Page</h1>
-            <hr />
+      <hr />
 
-            <TotalBalanceBox
-                accounts={[]}
-                totalBanks={3}
-                totalCurrentBalance={12450.75}
-            />
-
-            <h1>Expense Tracker</h1>
-            <div className="section">
-                <h2>Income</h2>
-                <div className="input-group">
-                    <label htmlFor="income-description">Description</label>
-                    <input type="text" id="income-description" placeholder="e.g. Salary" className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600" />
-                </div>
-                <div className="input-group">
-                    <label htmlFor="income-amount">Amount (₦)</label>
-                    <input type="number" id="income-amount" placeholder="e.g. 100000" className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600" />
-                </div>
-                <div className="button-group">
-                    <button onClick={() => addIncome()}>Add Income</button>
-                </div>
-            </div>
-            <div className="section">
-                <h2>Expenses</h2>
-                <div className="input-group">
-                    <label htmlFor="expense-description">Description</label>
-                    <input type="text" id="expense-description" placeholder="e.g. Rent" className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600" />
-                </div>
-                <div className="input-group">
-                    <label htmlFor="expense-category">Category</label>
-                    <select id="expense-category" className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600">
-                        <option value="Housing">Housing</option>
-                        <option value="Food">Food</option>
-                        <option value="Transportation">Transportation</option>
-                        <option value="Entertainment">Entertainment</option>
-                        <option value="Others">Others</option>
-                    </select>
-                </div>
-                <div className="input-group">
-                    <label htmlFor="expense-amount">Amount (₦)</label>
-                    <input type="number" id="expense-amount" placeholder="e.g. 50000" className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600" />
-                </div>
-                <div className="button-group">
-                    <button onClick={() => addExpense()}>Add Expense</button>
-                </div>
-            </div>
-            <div className="table-container">
-                <h2>Transaction History</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Description</th>
-                            <th>Category</th>
-                            <th>Amount (₦)</th>
-                            <th>Type</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transaction-history">
-                        {transactions.map((t, index) => (
-                            <tr key={index}>
-                                <td>{t.description}</td>
-                                <td>{t.category}</td>
-                                <td>{t.amount}</td>
-                                <td>{t.type}</td>
-                                <td>
-                                    <button onClick={() => setTransactions(transactions.filter((_, i) => i !== index))}>
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            <div className="summary">
-                <h2>Budget Summary</h2>
-                <p>Total Income: ₦<span id="total-income">{totalIncome}</span></p>
-                <p>Total Expenses: ₦<span id="total-expenses">{totalExpenses}</span></p>
-                <p>Balance: ₦<span id="balance">{balance}</span></p>
-            </div>
-            <div className="clear-button-group">
-                <button onClick={() => clearAll()}>Clear All</button>
-            </div>
+      {/* Summary Cards */}
+      <div>
+        <div>
+          <h3>Total Income</h3>
+          <p style={{ color: "green", fontSize: "24px" }}>
+            ${totalIncome.toFixed(2)}
+          </p>
         </div>
-    );
+
+        <div>
+          <h3>Total Expenses</h3>
+          <p style={{ color: "red", fontSize: "24px" }}>
+            ${totalExpenses.toFixed(2)}
+          </p>
+        </div>
+
+        <div>
+          <h3>Balance</h3>
+          <p style={{ fontSize: "24px", fontWeight: "bold" }}>
+            ${balance.toFixed(2)}
+          </p>
+        </div>
+      </div>
+
+      <hr />
+
+      {/* Recent Transactions */}
+      <h2>Recent Transactions</h2>
+      <table border="1" cellPadding="8" cellSpacing="0">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {transactions.map(t => (
+            <tr key={t.id}>
+              <td>{t.date}</td>
+              <td>{t.description}</td>
+              <td style={{ color: t.amount > 0 ? "green" : "red" }}>
+                {t.amount > 0 ? "+" : ""}${Math.abs(t.amount).toFixed(2)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <hr />
+
+      {/* Budget Section */}
+      <h2>Budget Overview</h2>
+      {budgets.map((b, index) => (
+        <div key={index} style={{ marginBottom: "12px" }}>
+          <p>
+            <strong>{b.category}</strong> — ${b.spent.toFixed(2)} / ${b.limit.toFixed(2)}
+          </p>
+          <progress value={b.spent} max={b.limit}></progress>
+          {b.spent > b.limit && (
+            <span style={{ color: "red" }}> Over budget!</span>
+          )}
+        </div>
+      ))}
+    </div>
+  )
 }
 
+export default Profile
