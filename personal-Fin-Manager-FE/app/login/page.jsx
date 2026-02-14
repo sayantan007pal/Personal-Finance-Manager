@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import api from "@/lib/api";
 import toast from "react-hot-toast";
 import React from "react";
 
@@ -15,7 +15,7 @@ export default function LoginPage() {
     const onLogin = async () => {
         try {
             setLoading(true);
-            const response = await axios.post( `${process.env.NEXT_PUBLIC_API_URL}/api/users/login`, {
+            const response = await api.post( `/api/users/login`, {
                 email: user.email,
                 password: user.password,
             });

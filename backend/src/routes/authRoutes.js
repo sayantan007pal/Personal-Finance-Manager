@@ -104,6 +104,7 @@ const userLogin = async (req, res) => {
         res.cookie("token", token, {
             httpOnly: true,
             maxAge: JWT_EXPIRATION_SECONDS * 1000,
+            sameSite: 'lax',
         });
 
         return res.status(200).json({

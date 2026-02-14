@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import {useSearchParams } from "next/navigation";
-import axios from "axios";
+import api from "@/lib/api";
 import Link from "next/link";
 
 export default function VerifyEmailPage() {
@@ -23,8 +23,8 @@ export default function VerifyEmailPage() {
         let cancelled = false;
         const verifyEmail = async () => {
             try {
-                const response = await axios.post(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/users/verifyemail`,
+                const response = await api.post(
+                    `/api/users/verifyemail`,
                     { token }
                 );
                 if (!cancelled) {

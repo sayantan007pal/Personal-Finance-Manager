@@ -6,6 +6,7 @@ dotenv.config();
 
 export const config = {
     port: process.env.PORT || 3005,
+    frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
     mongoURI: process.env.MONGO_URI,
     nodeEnv: process.env.NODE_ENV || 'development',
     jwtSecret: process.env.JWT_SECRET,

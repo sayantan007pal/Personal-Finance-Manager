@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import api from "@/lib/api";
 import toast from "react-hot-toast";
 import React from "react";
 
@@ -17,7 +17,7 @@ export default function ProfilePage(){
     const router = useRouter();
     const logout = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/logout`);
+            const response = await api.get(`/api/users/logout`);
             toast.success("Logout successful!");
             router.push("/login");
         } catch (err) {
