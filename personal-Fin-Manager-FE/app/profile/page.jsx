@@ -13,8 +13,10 @@ export default function ProfilePage(){
         email: "",
         password: ""
     })
+    const [transactions, setTransactions] = useState([]);
 
     const router = useRouter();
+    
     const logout = async () => {
         try {
             const response = await api.get(`/api/users/logout`);
@@ -25,7 +27,42 @@ export default function ProfilePage(){
             toast.error("Logout failed");
         }
     }
+        const totalIncome = transactions
+            .filter(t => t.type === "Income")
+            .reduce((sum, t) => sum + t.amount, 0);
 
+        const totalExpenses = transactions
+            .filter(t => t.type === "Expense")
+            .reduce((sum, t) => sum + t.amount, 0);
+
+        const balance = totalIncome - totalExpenses;
+        const addIncome = () => {
+            const description = document.getElementById("income-description").value;
+            const amount = parseFloat(document.getElementById("income-amount").value);
+
+            if (!description || !amount) return;  // don't add empty entries
+
+            setTransactions([...transactions, { description, amount, category: "Income", type: "Income" }]);
+
+            // Clear the input fields after adding
+            document.getElementById("income-description").value = "";
+            document.getElementById("income-amount").value = "";
+        };
+        const addExpense = () => {
+            const description = document.getElementById("expense-description").value;
+            const amount = parseFloat(document.getElementById("expense-amount").value);
+            const category = document.getElementById("expense-category").value;
+
+            if (!description || !amount) return;
+
+            setTransactions([...transactions, { description, amount, category, type: "Expense" }]);
+
+            document.getElementById("expense-description").value = "";
+            document.getElementById("expense-amount").value = "";
+        };
+        const clearAll = () => {
+        setTransactions([]);
+    };
     return (
         <div className="container">
             <h1>Profile Page</h1>
@@ -89,15 +126,27 @@ export default function ProfilePage(){
                         </tr>
                     </thead>
                     <tbody id="transaction-history">
-                        {/* Transactions will appear here */}
+                        {transactions.map((t, index) => (
+                            <tr key={index}>
+                                <td>{t.description}</td>
+                                <td>{t.category}</td>
+                                <td>{t.amount}</td>
+                                <td>{t.type}</td>
+                                <td>
+                                    <button onClick={() => setTransactions(transactions.filter((_, i) => i !== index))}>
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
             <div className="summary">
                 <h2>Budget Summary</h2>
-                <p>Total Income: ₦<span id="total-income">0</span></p>
-                <p>Total Expenses: ₦<span id="total-expenses">0</span></p>
-                <p>Balance: ₦<span id="balance">0</span></p>
+                <p>Total Income: ₦<span id="total-income">{totalIncome}</span></p>
+                <p>Total Expenses: ₦<span id="total-expenses">{totalExpenses}</span></p>
+                <p>Balance: ₦<span id="balance">{balance}</span></p>
             </div>
             <div className="clear-button-group">
                 <button onClick={() => clearAll()}>Clear All</button>
