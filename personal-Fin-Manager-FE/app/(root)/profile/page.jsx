@@ -16,18 +16,6 @@ export default function ProfilePage(){
     })
     const [transactions, setTransactions] = useState([]);
 
-    const router = useRouter();
-    
-    const logout = async () => {
-        try {
-            const response = await api.get(`/api/users/logout`);
-            toast.success("Logout successful!");
-            router.push("/login");
-        } catch (err) {
-            console.log("Logout failed", err.message);
-            toast.error("Logout failed");
-        }
-    }
         const totalIncome = transactions
             .filter(t => t.type === "Income")
             .reduce((sum, t) => sum + t.amount, 0);
@@ -74,13 +62,6 @@ export default function ProfilePage(){
                 totalBanks={3}
                 totalCurrentBalance={12450.75}
             />
-
-            <button
-                onClick={logout}
-                className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-            >
-                Logout
-            </button>
 
             <h1>Expense Tracker</h1>
             <div className="section">
