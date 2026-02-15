@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import connectDB from "./config/database.js";
 import { validateConfig, config } from "./config/environment.js";
 import { errorHandler } from "./middleware/index.js";
@@ -12,6 +13,7 @@ const PORT = config.port;
 // parse request body
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // cors
 app.use(cors({

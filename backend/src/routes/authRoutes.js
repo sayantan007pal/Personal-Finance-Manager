@@ -188,7 +188,42 @@ const userLogOut = async(req, res)=>{
 
 }
 
+const getUserProfile = async (req, res) => {
+    try {
+        const token = req.cookies?.token;
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: "Not authenticated",
+            });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id).select("-password -refreshToken -forgotPasswordToken -forgotPasswordExpiry -emailVerificationToken -emailVerificationExpiry");
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            name: user.fullName,
+            email: user.email,
+            username: user.username,
+        });
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: err.message,
+        });
+    }
+};
+
 router.get("/logout", userLogOut);
+router.get("/profile", getUserProfile);
 router.post("/signup", userSignUp);
 router.post("/login", userLogin);
 router.post("/verifyemail", verifyEmail);

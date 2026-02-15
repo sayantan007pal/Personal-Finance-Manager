@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server'
 // This function can be marked `async` if using `await` inside
 export function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
-    const isPublicPath = pathname === "/login" || pathname === "/signup";
+    const isPublicPath = pathname === "/login" || pathname === "/signup" || pathname === "/verifyemail";
     const token = request.cookies.get("token")?.value;
 
     // Handle root path - redirect based on auth status
@@ -28,5 +28,5 @@ export function proxy(request: NextRequest) {
 }
  
 export const config = {
-  matcher: ["/", "/login", "/signup", "/profile"],
+  matcher: ["/", "/login", "/signup", "/profile", "/verifyemail"],
 }
