@@ -24,7 +24,9 @@ const Sidebar = () => {
             <div>
                 <h1 >Menu</h1>
                 <hr />
-                <Link href="/profile" className="block py-2 px-3 rounded hover:bg-gray-700 transition">Profile</Link>
+                <Link href="/profile" className="block py-2 px-3 rounded hover:bg-gray-700 transition">Dashboard</Link>
+                <Link href="/account" className="block py-2 px-3 rounded hover:bg-gray-700 transition">Accounts</Link>
+                <Link href="/transactions" className="block py-2 px-3 rounded hover:bg-gray-700 transition">Transactions</Link>
             </div>
             <button
                 onClick={logout}
