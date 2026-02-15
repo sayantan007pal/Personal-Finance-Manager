@@ -7,3 +7,12 @@ import toast from "react-hot-toast";
 
 
   const ACCOUNT_TYPE = ["SAVINGS", "CURRENT", "CREDIT_CARD", "LOAN", "OTHER"]
+
+  export default function AccountPage() {
+    return (
+        <div>
+            <h1>Account</h1>
+            <hr />
+        </div>
+    )
+  }
