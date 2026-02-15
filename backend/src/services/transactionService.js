@@ -47,6 +47,19 @@ async function createTransaction(req, res){
             userId:req.user.id
         });
         const savedTransaction = await newTransaction.save();
+        if(type === "DEBIT"){
+            if(account.balance < 0){
+                return res.status(400).json({
+                    success: false,
+                    message: "Insufficient balance"
+                });
+            }
+            account.balance -= amount;
+        }
+        else{
+            account.balance += amount;
+        }
+        await account.save();
         return res.status(201).json({
             success: true,
             message: "Transaction created successfully",

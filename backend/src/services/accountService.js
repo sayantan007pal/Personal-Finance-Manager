@@ -51,4 +51,26 @@ async function createAccount(req, res){
     }
 }
 
-export { createAccount };
+async function getAccount(req, res){
+    try {
+        const account = await Account.findOne({ userId: req.user.id });
+        if(!account){
+            return res.status(404).json({
+                success: false,
+                message: "Account not found"
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            message: "Account fetched successfully",
+            data: account
+        });
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+}   
+
+export { createAccount, getAccount };
