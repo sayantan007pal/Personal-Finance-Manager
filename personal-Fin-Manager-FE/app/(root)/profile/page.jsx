@@ -19,11 +19,11 @@ const Profile = () => {
         setName(profileRes.data.name)
         setEmail(profileRes.data.email)
 
-        // const transactionsRes = await api.get('/api/transactions')
-        // setTransactions(transactionsRes.data)
+        const transactionsRes = await api.get('/api/transactions')
+        setTransactions(transactionsRes.data)
 
-        // const budgetsRes = await api.get('/api/budgets')
-        // setBudgets(budgetsRes.data)
+        const budgetsRes = await api.get('/api/budgets')
+        setBudgets(budgetsRes.data)
       } catch (err) {
         console.log("Failed to fetch data", err.message)
         setError("Failed to load data")

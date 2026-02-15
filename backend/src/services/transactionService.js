@@ -73,4 +73,21 @@ async function createTransaction(req, res){
     }
 }
 
-export { createTransaction };
+//get all transactions
+async function getAllTransactions(req, res){
+    try {
+        const transactions = await Transaction.find({ userId: req.user.id });
+        return res.status(200).json({
+            success: true,
+            message: "Transactions fetched successfully",
+            data: transactions
+        });
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+}
+
+export { createTransaction, getAllTransactions };
