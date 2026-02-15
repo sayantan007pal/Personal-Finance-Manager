@@ -1,6 +1,6 @@
 import { User, Account } from "../models/index.js";
 
-const AccountType = ["SAVINGS", "CURRENT", "CREDIT_CARD", "LOAN", "OTHER"]
+const ACCOUNT_TYPE = ["SAVINGS", "CURRENT", "CREDIT_CARD", "LOAN", "OTHER"]
 
 //account service
 async function createAccount(req, res){
@@ -12,8 +12,8 @@ async function createAccount(req, res){
                 message: "User not found"
             });
         }
-        const {name, type, balance, currency, bankName, accountName, accountType, accountNumberLastFour, linkedAt} = req.body;
-        if(!AccountType.includes(type)){
+        const {name, balance, currency, bankName, accountName, accountType, accountNumberLastFour, linkedAt} = req.body;
+        if(!ACCOUNT_TYPE.includes(accountType)){
             return res.status(400).json({
                 success: false,
                 message: "Invalid account type"
@@ -21,7 +21,6 @@ async function createAccount(req, res){
         }
         const newAccount = new Account({
             name,
-            type,
             balance,
             currency,
             bankName,

@@ -14,10 +14,6 @@ const accountsSchema = new mongoose.Schema({
         type: mongoose.Decimal128,
         required: true
     },
-    type: {
-        type: String,
-        required: true
-    },
     currency: {
         type: String,
         required: true
