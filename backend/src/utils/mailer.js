@@ -41,6 +41,7 @@ export async function sendMail({ email, emailType, userId }) {
 
         const mailResponse = await transport.sendMail(mailOptions);
         console.log("Email sent successfully", mailResponse)
+        console.log("hashedToken= ",hashedToken)
         return mailResponse;
 
     } catch (error) {
