@@ -194,16 +194,8 @@ const userLogOut = async(req, res)=>{
 //get user profile
 const getUserProfile = async (req, res) => {
     try {
-        const token = req.cookies?.token;
-        if (!token) {
-            return res.status(401).json({
-                success: false,
-                message: "Not authenticated",
-            });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findById(decoded.id).select("-password -refreshToken -forgotPasswordToken -forgotPasswordExpiry -emailVerificationToken -emailVerificationExpiry");
+        // req.user is set by authMiddleware which has the user id
+        const user = await User.findById(req.user.id).select("-password -refreshToken -forgotPasswordToken -forgotPasswordExpiry -emailVerificationToken -emailVerificationExpiry");
 
         if (!user) {
             return res.status(404).json({
