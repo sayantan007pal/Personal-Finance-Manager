@@ -4,16 +4,12 @@ import type { NextRequest } from 'next/server'
 // This function can be marked `async` if using `await` inside
 export function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
-    const isPublicPath = pathname === "/login" || pathname === "/signup" || pathname === "/verifyemail";
+    const isPublicPath = pathname === "/" || pathname === "/login" || pathname === "/signup" || pathname === "/verifyemail";
     const token = request.cookies.get("token")?.value;
 
-    // Handle root path - redirect based on auth status
-    if (pathname === "/") {
-        if (token) {
-            return NextResponse.redirect(new URL('/profile', request.url));
-        } else {
-            return NextResponse.redirect(new URL('/login', request.url));
-        }
+    // Redirect logged-in users away from landing page
+    if (token && pathname === "/") {
+        return NextResponse.redirect(new URL('/profile', request.url));
     }
 
     if (token && isPublicPath) {
