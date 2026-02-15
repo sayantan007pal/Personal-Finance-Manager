@@ -18,6 +18,61 @@ export default function TransactionsPage() {
     const [account, setAccount] = useState(null);
     const [loading, setLoading] = useState(false);
 
+    const fetchTransactions = async () => {
+        try {
+            const res = await api.get("/api/transactions");
+            setTransactions(res.data.data);
+        } catch (err) {
+            console.log("Failed to fetch transactions", err.message);
+        }
+    };
+
+    const fetchAccount = async () => {
+        try {
+            const res = await api.get("/api/accounts");
+            setAccount(res.data.data);
+        } catch (err) {
+            console.log("Failed to fetch account", err.message);
+        }
+    };
+
+    useEffect(() => {
+        fetchTransactions();
+        fetchAccount();
+    }, []);
+
+    const onSubmit = async () => {
+        if (!form.amount || !form.type || !form.category || !form.description || !form.date) {
+            toast.error("Please fill all fields");
+            return;
+        }
+        if (!account?._id) {
+            toast.error("No account found. Please create an account first.");
+            return;
+        }
+        try {
+            setLoading(true);
+            await api.post("/api/transactions", {
+                amount: parseFloat(form.amount),
+                type: form.type,
+                category: form.category,
+                description: form.description,
+                date: form.date,
+                accountId: account._id,
+            });
+            toast.success("Transaction added!");
+            setForm({ amount: "", type: "", category: "", description: "", date: "" });
+            fetchTransactions();
+        } catch (err) {
+            console.log("Failed to add transaction", err.message);
+            toast.error(err.response?.data?.message || "Failed to add transaction");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getAmount = (t) => parseFloat(t.amount?.$numberDecimal || t.amount || 0);
+
 
     return (
         <div>
