@@ -16,7 +16,7 @@ export function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL('/profile', request.url)); // Redirect to profile if already logged in and trying to access login/signup;
     }
     if (!token && !isPublicPath) {
-        return NextResponse.redirect(new URL('/login', request.url)); // Redirect to login if not logged in and trying to access protected routes;
+        return NextResponse.redirect(new URL('/', request.url)); // Redirect to main page with login and signup options if not logged in and trying to access protected routes;
     }
     
     // Allow the request to proceed if no redirect is needed
