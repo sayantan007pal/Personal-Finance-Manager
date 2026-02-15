@@ -1,5 +1,5 @@
 import User from "./userModel.js";
-import Accounts from "./accountsModel.js";
+import Account from "./accountsModel.js";
 import Transaction from "./transactionModel.js";
 
-export  {User, Accounts, Transaction}
+export  {User, Account, Transaction}
