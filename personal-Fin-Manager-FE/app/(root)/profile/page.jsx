@@ -9,29 +9,44 @@ const Profile = () => {
   const [transactions, setTransactions] = useState([])
   const [account, setAccount] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [profileError, setProfileError] = useState(null)
+  const [transactionsError, setTransactionsError] = useState(null)
+  const [accountError, setAccountError] = useState(null)
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        setLoading(true)
+      setLoading(true)
 
+      // Fetch profile — this is critical, so if it fails we show an error
+      try {
         const profileRes = await api.get('/api/users/profile')
         setName(profileRes.data.name)
         setEmail(profileRes.data.email)
         setUsername(profileRes.data.username)
-
-        const transactionsRes = await api.get('/api/transactions')
-        setTransactions(transactionsRes.data.data)
-
-        const budgetsRes = await api.get('/api/accounts')
-        setAccount(budgetsRes.data.data)
       } catch (err) {
-        console.log("Failed to fetch data", err.message)
-        setError("Failed to load data")
-      } finally {
-        setLoading(false)
+        console.log("Failed to fetch profile", err.message)
+        setProfileError("Failed to load profile data")
       }
+
+      // Fetch transactions — gracefully handle if none exist
+      try {
+        const transactionsRes = await api.get('/api/transactions')
+        setTransactions(transactionsRes.data.data || [])
+      } catch (err) {
+        console.log("Failed to fetch transactions", err.message)
+        setTransactionsError("No transactions data available yet")
+      }
+
+      // Fetch account — gracefully handle if none exist
+      try {
+        const budgetsRes = await api.get('/api/accounts')
+        setAccount(budgetsRes.data.data || null)
+      } catch (err) {
+        console.log("Failed to fetch account", err.message)
+        setAccountError("No account data available yet")
+      }
+
+      setLoading(false)
     }
 
     fetchData()
@@ -50,7 +65,7 @@ const Profile = () => {
   const balance = account ? parseFloat(account.balance?.$numberDecimal || account.balance || 0) : 0
 
   if (loading) return <p>Loading...</p>
-  if (error) return <p>{error}</p>
+  if (profileError) return <p>{profileError}</p>
 
   return (
     <div>
@@ -62,13 +77,23 @@ const Profile = () => {
       <hr />
 
       {/* Account Info */}
-      {account && (
+      {accountError ? (
+        <div>
+          <h2>Account Info</h2>
+          <p style={{ color: "gray", fontStyle: "italic" }}>{accountError}</p>
+        </div>
+      ) : account ? (
         <div>
           <h2>Account Info</h2>
           <p><strong>Bank:</strong> {account.bankName}</p>
           <p><strong>Account:</strong> {account.accountName} ({account.accountType})</p>
           <p><strong>Currency:</strong> {account.currency}</p>
           <p><strong>Last 4 Digits:</strong> {account.accountNumberLastFour}</p>
+        </div>
+      ) : (
+        <div>
+          <h2>Account Info</h2>
+          <p style={{ color: "gray", fontStyle: "italic" }}>No account data available yet</p>
         </div>
       )}
 
@@ -102,30 +127,36 @@ const Profile = () => {
 
       {/* Recent Transactions */}
       <h2>Recent Transactions</h2>
-      <table border="1" cellPadding="8" cellSpacing="0">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Category</th>
-            <th>Type</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map(t => (
-            <tr key={t._id}>
-              <td>{new Date(t.date).toLocaleDateString()}</td>
-              <td>{t.description}</td>
-              <td>{t.category}</td>
-              <td>{t.type}</td>
-              <td style={{ color: t.type === "CREDIT" ? "green" : "red" }}>
-                {t.type === "CREDIT" ? "+" : "-"}{account?.currency || "$"} {getAmount(t).toFixed(2)}
-              </td>
+      {transactionsError ? (
+        <p style={{ color: "gray", fontStyle: "italic" }}>{transactionsError}</p>
+      ) : transactions.length === 0 ? (
+        <p style={{ color: "gray", fontStyle: "italic" }}>No transactions available yet</p>
+      ) : (
+        <table border="1" cellPadding="8" cellSpacing="0">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Type</th>
+              <th>Amount</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {transactions.map(t => (
+              <tr key={t._id}>
+                <td>{new Date(t.date).toLocaleDateString()}</td>
+                <td>{t.description}</td>
+                <td>{t.category}</td>
+                <td>{t.type}</td>
+                <td style={{ color: t.type === "CREDIT" ? "green" : "red" }}>
+                  {t.type === "CREDIT" ? "+" : "-"}{account?.currency || "$"} {getAmount(t).toFixed(2)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   )
 }
