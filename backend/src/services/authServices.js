@@ -1,11 +1,8 @@
 import { User } from "../models/index.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { Router } from "express";
 import { sendMail } from "../utils/index.js";
 
-
-const router = Router();
 
 const JWT_EXPIRATION_SECONDS = 24 * 60 * 60; // 1 day
 
