@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 
 const VALID_TYPES = ["DEBIT", "CREDIT"];
 const VALID_CATEGORIES = ["FOOD", "TRANSPORTATION", "BILLS", "ENTERTAINMENT", "SALARY", "RENT", "GROCERIES", "SHOPPING", "HEALTH", "EDUCATION", "OTHER"];
-
+const CURRENCY = ["USD", "INR", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "CNY", "HKD", "NZD", "SEK", "NOK", "DKK", "BRL", "MXN", "ZAR", "TRY", "RUB", "SGD", "AED"]
 export default function TransactionsPage() {
     const [form, setForm] = useState({
         amount: "",
@@ -187,7 +187,7 @@ export default function TransactionsPage() {
                                 <td>{t.category}</td>
                                 <td>{t.type}</td>
                                 <td style={{ color: t.type === "CREDIT" ? "green" : "red" }}>
-                                    {t.type === "CREDIT" ? "+" : "-"}$ {getAmount(t).toFixed(2)}
+                                    {t.type === "CREDIT" ? "+" : "-"} {account?.currency} {getAmount(t).toFixed(2)}
                                 </td>
                             </tr>
                         ))}

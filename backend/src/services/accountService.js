@@ -1,6 +1,7 @@
 import { User, Account } from "../models/index.js";
 
 const ACCOUNT_TYPE = ["SAVINGS", "CURRENT", "CREDIT_CARD", "LOAN", "OTHER"]
+const CURRENCY = ["USD", "INR", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "CNY", "HKD", "NZD", "SEK", "NOK", "DKK", "BRL", "MXN", "ZAR", "TRY", "RUB", "SGD", "AED"]
 
 //account service
 async function createAccount(req, res){
@@ -24,6 +25,12 @@ async function createAccount(req, res){
             return res.status(400).json({
                 success: false,
                 message: "Invalid account type"
+            });
+        }
+        if(!CURRENCY.includes(currency)){
+            return res.status(400).json({
+                success: false,
+                message: "Invalid currency"
             });
         }
         const newAccount = new Account({
