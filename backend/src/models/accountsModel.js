@@ -4,7 +4,8 @@ const accountsSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",
-        required: true
+        required: true,
+        unique: true
     },
     name: {
         type: String,

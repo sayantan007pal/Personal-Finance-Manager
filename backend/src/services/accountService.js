@@ -13,6 +13,13 @@ async function createAccount(req, res){
             });
         }
         const {name, balance, currency, bankName, accountName, accountType, accountNumberLastFour, linkedAt} = req.body;
+        const existingAccount = await Account.findOne({ userId: req.user.id });
+        if(existingAccount){
+            return res.status(400).json({
+                success: false,
+                message: "User already has an account"
+            });
+        }
         if(!ACCOUNT_TYPE.includes(accountType)){
             return res.status(400).json({
                 success: false,
