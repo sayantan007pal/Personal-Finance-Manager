@@ -102,10 +102,12 @@ const userLogin = async (req, res) => {
         });
 
         // optionally set cookie (Express-style)
+        const isProduction = process.env.NODE_ENV === 'production';
         res.cookie("token", token, {
             httpOnly: true,
             maxAge: JWT_EXPIRATION_SECONDS * 1000,
-            sameSite: 'lax',
+            sameSite: isProduction ? 'none' : 'lax',
+            secure: isProduction, // Required when sameSite is 'none'
         });
 
         return res.status(200).json({
@@ -176,7 +178,12 @@ const verifyEmail = async (req, res) => {
 //logout
 const userLogOut = async(req, res)=>{
     try {
-        res.clearCookie("token");
+        const isProduction = process.env.NODE_ENV === 'production';
+        res.clearCookie("token", {
+            httpOnly: true,
+            sameSite: isProduction ? 'none' : 'lax',
+            secure: isProduction,
+        });
         return res.status(200).json({
             success: true,
             message: "Logged out successfully"
