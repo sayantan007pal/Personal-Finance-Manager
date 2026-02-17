@@ -10,12 +10,15 @@ const Sidebar = () => {
 
     const logout = async () => {
         try {
-            const response = await api.get(`/api/users/logout`);
+            await api.get(`/api/users/logout`);
             toast.success("Logout successful!");
-            router.push("/login");
         } catch (err) {
             console.log("Logout failed", err.message);
-            toast.error("Logout failed");
+            // Still logout locally even if API fails
+        } finally {
+            // Always clear frontend loggedIn cookie and redirect
+            document.cookie = "loggedIn=; path=/; max-age=0";
+            router.push("/login");
         }
     }
 

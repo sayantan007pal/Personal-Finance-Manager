@@ -8,5 +8,18 @@ const api = axios.create({
     withCredentials: true,
 });
 
+// Handle 401 errors - clear loggedIn cookie and redirect to login
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401 && typeof window !== 'undefined') {
+            // Clear the frontend indicator cookie
+            document.cookie = "loggedIn=; path=/; max-age=0";
+            // Redirect to login
+            window.location.href = '/login';
+        }
+        return Promise.reject(error);
+    }
+);
 
 export default api;

@@ -20,6 +20,10 @@ export default function LoginPage() {
                 password: user.password,
             });
             console.log("login success", response.data);
+            
+            // Set a frontend cookie so middleware knows user is logged in
+            document.cookie = "loggedIn=true; path=/; max-age=86400; SameSite=Lax";
+            
             toast.success("Login successful!");
             router.push("/profile");
             return;
