@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
-import {useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import api from "@/lib/api";
 import Link from "next/link";
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
     const searchParams = useSearchParams();
     const [status, setStatus] = useState("loading");
     const [message, setMessage] = useState("");
@@ -44,10 +44,7 @@ export default function VerifyEmailPage() {
     }, [searchParams]);
 
     return (
-        <div style={{ padding: "2rem", textAlign: "center" }}>
-            <h1>Email Verification</h1>
-            <hr />
-            
+        <>
             {status === "loading" && <p>Verifying your email...</p>}
             
             {status === "success" && (
@@ -63,6 +60,18 @@ export default function VerifyEmailPage() {
                     <Link href="/signup">Back to Signup</Link>
                 </div>
             )}
+        </>
+    );
+}
+
+export default function VerifyEmailPage() {
+    return (
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+            <h1>Email Verification</h1>
+            <hr />
+            <Suspense fallback={<p>Loading...</p>}>
+                <VerifyEmailContent />
+            </Suspense>
         </div>
     );
 }
