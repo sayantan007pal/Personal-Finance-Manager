@@ -104,7 +104,7 @@ const Profile = () => {
       {/* Pie Chart */}
       <h2>Spending Breakdown</h2>
       {transactions.length === 0 ? (
-        <p style={{ color: "blue", fontStyle: "italic" }}>No transactions available yet</p>
+        <p style={{ color: "gray", fontStyle: "italic" }}>No transactions available yet</p>
       ) : (
         <DemoMemo data={transactions} />
       )}

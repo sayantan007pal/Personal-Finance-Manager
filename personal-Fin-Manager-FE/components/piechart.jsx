@@ -1,13 +1,13 @@
 'use client'
 import { Pie } from '@ant-design/plots';
-import { Button } from 'antd';
+import { Button, Spin } from 'antd';
 import { isEqual } from 'lodash';
-import React, { memo, useState } from 'react';
-import { createRoot } from 'react-dom/client';
+import React, { memo, useState, useEffect } from 'react';
+import api from '@/lib/api';
 
 const DemoPie = memo(
   function DemoPie({ data, onReady }) {
-    var config = {
+    const config = {
       data,
       angleField: 'value',
       colorField: 'type',
@@ -25,54 +25,59 @@ const DemoPie = memo(
 );
 
 const DemoMemo = () => {
-  const [count, setCount] = useState(0);
-  const [data, setData] = useState([
-    {
-      type: 'Category One',
-      value: 27,
-    },
-    {
-      type: 'Category Two',
-      value: 25,
-    },
-    {
-      type: 'Category Three',
-      value: 18,
-    },
-    {
-      type: 'Category Four',
-      value: 15,
-    },
-    {
-      type: 'Category Five',
-      value: 10,
-    },
-    {
-      type: 'Other',
-      value: 5,
-    },
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+
+  const fetchTransactions = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/api/transactions');
+      const transactions = res.data.data || [];
+      // Process transactions to get category-wise spending totals
+      const categoryMap = {};
+      transactions.forEach((t) => {
+        const category = t.category || 'Uncategorized';
+        const amount = Math.abs(parseFloat(t.amount?.$numberDecimal || t.amount || 0));
+        // Only include expenses (negative amounts or all if tracking spending)
+            
+        if (!categoryMap[category] && t.type === 'DEBIT') {
+          categoryMap[category] = 0;
+        }
+        categoryMap[category] += amount;
+      });
+      // Convert to data format for pie chart
+      const newData = Object.keys(categoryMap).map((key) => ({
+        type: key,
+        value: categoryMap[key],
+      }));
+      setData(newData);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
 
   return (
     <div>
       <Button
         onClick={() => {
-          setCount(count + 1);
+          fetchTransactions();
         }}
       >
-        Do not Re-render
+        Refresh Data
       </Button>
-      <Button
-        style={{ margin: '0 10px' }}
-        type="primary"
-        onClick={() => {
-          setData(data.map((d) => ({ ...d, value: Math.floor(Math.random() * 100) })));
-        }}
-      >
-        Re-render
-      </Button>
-      <span>{count}</span>
-      <DemoPie data={data} onReady={({ chart }) => {}} />
+      {loading ? (
+        <Spin tip="Loading transactions..." />
+      ) : data.length > 0 ? (
+        <DemoPie data={data} onReady={({ chart }) => {}} />
+      ) : (
+        <p>No transaction data available</p>
+      )}
     </div>
   );
 };
