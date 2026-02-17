@@ -19,6 +19,7 @@ const CURRENCY = ["USD", "INR", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "CNY",
     const [loading, setLoading] = useState(false);
     const [accounts, setAccounts] = useState(null);
     const [accountError, setAccountError] = useState(null);
+    const [showForm, setShowForm] = useState(true);
     const fetchAccounts = async () => {
         try {
             const res = await api.get("/api/accounts");

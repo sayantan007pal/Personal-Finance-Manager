@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import api from '@/lib/api'
+import DemoMemo from '@/components/piechart'
 
 const Profile = () => {
   const [name, setName] = useState("")
@@ -96,6 +97,18 @@ const Profile = () => {
           <p style={{ color: "gray", fontStyle: "italic" }}>No account data available yet</p>
         </div>
       )}
+            <hr />
+
+            <div>
+
+      {/* Pie Chart */}
+      <h2>Spending Breakdown</h2>
+      {transactions.length === 0 ? (
+        <p style={{ color: "blue", fontStyle: "italic" }}>No transactions available yet</p>
+      ) : (
+        <DemoMemo data={transactions} />
+      )}
+            </div>
 
       <hr />
 
