@@ -17,29 +17,63 @@ const CURRENCY = ["USD", "INR", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "CNY",
     });
 
     const [loading, setLoading] = useState(false);
-    const onSubmit = async (e) => {
-        e.preventDefault();
+    const [accounts, setAccounts] = useState(null);
+    const [accountError, setAccountError] = useState(null);
+    const fetchAccounts = async () => {
+        try {
+            const res = await api.get("/api/accounts");
+            setAccounts(res.data.data || null);
+        } catch (err) {
+            console.log("Failed to fetch accounts", err.message);
+            setAccountError("No account data available yet")
+        }
+    }
+    useEffect(() => {
+        fetchAccounts();
+    }, []);
+
+    const onSubmit = async () => {
+        if (!form.accountType || !form.accountName || !form.accountNumber || !form.bankName || !form.currency || !form.balance) {
+            toast.error("Please fill all fields");
+            return;
+        }
         try {
             setLoading(true);
-            const payload = {
-                name: form.accountName,
-                accountName: form.accountName,
+            await api.post("/api/accounts", {
                 accountType: form.accountType,
-                accountNumberLastFour: form.accountNumber.slice(-4),
+                accountName: form.accountName,
+                accountNumber: form.accountNumber,
                 bankName: form.bankName,
                 currency: form.currency,
-                balance: form.balance,
-                linkedAt: new Date().toISOString(),
-            };
-            await api.post("/api/accounts", payload);
+                balance: parseFloat(form.balance),
+            });
             toast.success("Account added successfully");
-            setForm({ accountType: "", accountName: "", accountNumber: "", bankName: "", currency: "", balance: "" });
+            setForm({
+                accountType: "",
+                accountName: "",
+                accountNumber: "",
+                bankName: "",
+                currency: "",
+                balance: "",
+            });
+            fetchAccounts();
         } catch (err) {
             console.log("Failed to add account", err.message);
-            toast.error(err.response?.data?.message || "Failed to add account");
+            toast.error("Failed to add account");
         } finally {
             setLoading(false);
         }
+    };
+
+    const getAmount = (account) => {
+        const transactions = account.transactions || [];
+        return transactions.reduce((total, txn) => {
+            if (txn.type === "CREDIT") {
+                return total + txn.amount;
+            } else {
+                return total - txn.amount;
+            }
+        }, 0);
     };
 
 
@@ -128,6 +162,32 @@ const CURRENCY = ["USD", "INR", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "CNY",
                     {loading ? "Adding..." : "Add Account"}
                 </button>
             </form>
+
+            <hr />
+
+                  {/* Account Info */}
+      {accountError ? (
+        <div>
+          <h2>Account Info</h2>
+          <p style={{ color: "gray", fontStyle: "italic" }}>{accountError}</p>
         </div>
+      ) : accounts ? (
+        <div>
+          <h2>Account Info</h2>
+          <p><strong>Bank:</strong> {accounts.bankName}</p>
+          <p><strong>Account:</strong> {accounts.accountName} ({accounts.accountType})</p>
+          <p><strong>Currency:</strong> {accounts.currency}</p>
+          <p><strong>Last 4 Digits:</strong> {accounts.accountNumberLastFour}</p>
+        </div>
+      ) : (
+        <div>
+          <h2>Account Info</h2>
+          <p style={{ color: "gray", fontStyle: "italic" }}>No account data available yet</p>
+        </div>
+      )}
+        </div>
+
+
+        
     )
   }
